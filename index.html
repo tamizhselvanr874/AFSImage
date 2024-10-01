@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AFSImage</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+  </head>
+  <body>
+    <header>
+        <div class="logo-container">
+          <img src="AFS Innovation Logo_dark background.png" alt="AFS Logo" />
+        </div>
+      
+        <div class="header-content">
+         
+          <div
+            class="hamburger"
+            onclick="toggleSidebar()"
+          >
+            ☰
+          </div>
+          <h1>AFSImage</h1>
+        </div>
+      </header>          
+    <main>
+      <div class="card-container">
+        <div class="card" id="card1" style="visibility: hidden">
+          <div
+            class="image-container card1-image-container"
+            style="visibility: visible"
+          >
+            <img src="image1.png" alt="Sample Image" class="card1-image" />
+            <button
+              class="icon-button-card1 recycle-button-card1"
+              id="recycleButtonCard1"
+            >
+              <i class="fas fa-download"></i>
+            </button>
+            <button
+              class="icon-button-card1 delete-button-card1"
+              id="deleteButtonCard1"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </button>
+
+            <button class="download-button-card1" id="downloadButtonCard1">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card" id="card2" style="visibility: hidden">
+          <div
+            class="image-container card2-image-container"
+            style="visibility: visible"
+          >
+            <img src="image2.png" alt="Sample Image" class="card2-image" />
+            <button
+              class="icon-button-card2 copy-button-card2"
+              id="copyButtonCard2"
+            >
+              <i class="fas fa-download"></i>
+            </button>
+            <button
+              class="icon-button-card2 delete-button-card2"
+              id="deleteButtonCard2"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </button>
+
+            <button
+              class="icon-button-card2 left-arrow-button-card2"
+              id="leftArrowButtonCard2"
+            >
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <button
+              class="icon-button-card2 right-arrow-button-card2"
+              id="rightArrowButtonCard2"
+            >
+              <i class="fas fa-arrow-right"></i>
+            </button>
+
+            <button
+              class="download-button-card2"
+              id="downloadButtonCard2"
+              style="display: none"
+            >
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="text-box-container">
+        <input
+          type="text"
+          class="text-box"
+          id="promptInput"
+          placeholder="Describe the image you want to create..."
+        />
+        <button
+          class="generate"
+          id="submit"
+          style="border-radius: 20%; font-size: 1rem"
+        >
+          <i class="far fa-paper-plane"></i>
+        </button>
+      </div>
+    </main>
+
+    <aside class="sidebar" id="sidebar">
+      <button class="close-btn" onclick="toggleSidebar()">&#10006;</button>
+
+      <div id="field1">
+        <h2>Image Style</h2>
+        <button
+          class="icon-btn active"
+          id="Vivid"
+          onclick="toggleActive(this, 'style')"
+        >
+          <i class="fas fa-sun"></i>
+          <!-- Sunshine icon -->
+        </button>
+        <button
+          class="icon-btn"
+          id="Natural"
+          onclick="toggleActive(this, 'style')"
+        >
+          <i class="fas fa-leaf"></i>
+          <!-- Leaves icon -->
+        </button>
+        <hr />
+      </div>
+      <div id="field2">
+        <h2>Image Quality</h2>
+        <button
+          class="icon-btn"
+          id="HD"
+          onclick="toggleActive(this, 'quality')"
+          style="border-radius: 20%"
+        >
+          HD
+          <!-- Text representation for HD -->
+        </button>
+        <button
+          class="icon-btn active"
+          id="Standard"
+          onclick="toggleActive(this, 'quality')"
+          style="border-radius: 20%"
+        >
+          SD
+          <!-- Text representation for SD -->
+        </button>
+        <hr />
+      </div>
+      <div id="field3">
+        <h2>Image Size</h2>
+        <button
+          class="icon-btn"
+          id="Desktop"
+          onclick="toggleActive(this, 'size')"
+        >
+          <i class="fas fa-desktop"></i>
+          <!-- Desktop icon -->
+        </button>
+        <button
+          class="icon-btn"
+          id="Website"
+          onclick="toggleActive(this, 'size')"
+        >
+          <i class="fas fa-globe"></i>
+          <!-- Website icon -->
+        </button>
+        <button
+          class="icon-btn"
+          id="Landscape"
+          onclick="toggleActive(this, 'size')"
+        >
+          <i class="fas fa-mountain"></i>
+          <!-- Landscape icon -->
+        </button>
+        <button
+          class="icon-btn"
+          id="Portrait"
+          onclick="toggleActive(this, 'size')"
+        >
+          <i class="fas fa-user-alt"></i>
+          <!-- Portrait icon -->
+        </button>
+        <button
+          class="icon-btn active"
+          id="Square"
+          onclick="toggleActive(this, 'size')"
+        >
+          <i class="fas fa-square"></i>
+          <!-- Square icon -->
+        </button>
+        <hr />
+      </div>
+      <div id="field4">
+        <h2>Style Guide</h2>
+        <button
+          class="icon-btn"
+          id="Guide"
+          onclick="toggleActive(this, 'guide')"
+        >
+          <i class="fas fa-palette"></i>
+          <!-- paint icon -->
+        </button>
+      </div>
+    </aside>
+
+    <script src="https://alcdn.msauth.net/browser/2.17.0/js/msal-browser.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
