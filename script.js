@@ -44,7 +44,7 @@ function generateImage() {
   function fetchImageWithRetry() {
     isGenerating = true; // Set flag to true to prevent multiple requests
 
-    fetch("https://dall-t-2.azurewebsites.net/api/httpTriggerts", {
+    fetch("https://afsimagefunction.azurewebsites.net/api/httpTriggerAFS", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
