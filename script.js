@@ -39,7 +39,7 @@ async function generateImage() {
     async function fetchImageWithRetry(currentRetry = 0) {  
         isGenerating = true; // Set flag to true to prevent multiple requests  
         try {  
-            const response = await fetch("https://testdall.azurewebsites.net/httpTrigger", {  
+            const response = await fetch("https://testdall.azurewebsites.net/httpTriggerts", {  
                 method: "POST",  
                 headers: {  
                     "Content-Type": "application/json",  
