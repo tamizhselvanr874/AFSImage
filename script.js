@@ -1,4 +1,3 @@
-// ----------------------  
 let isGenerating = false;  
   
 // Function to toggle the sidebar  
@@ -106,14 +105,6 @@ async function handleImageLoad(url, prompt, size, imageContainerCard1, imageCont
     imgCard1.onerror = imgCard2.onerror = () => {  
         handleImageError(imageContainerCard1, loadingSpinnerCard1);  
     };  
-  
-    if (["Desktop", "Website", "Portrait", "Landscape"].includes(size)) {  
-        const dimensions = getImageDimensions(size);  
-        const resizedUrl = await resizeImage(url, dimensions.width, dimensions.height);  
-        imgCard1.src = resizedUrl;  
-        imgCard2.src = resizedUrl;  
-        updateCarouselImages(resizedUrl); // Update the carousel images with the resized URL  
-    }  
 }  
   
 function getImageDimensions(size) {  
@@ -225,10 +216,14 @@ document.querySelectorAll(".icon-btn").forEach(button => {
 });  
   
 // Event listener for the download button in Card 2  
-downloadButton.addEventListener('click', () => {  
+downloadButton.addEventListener('click', async () => {  
     if (currentImageUrl) {  
+        const size = document.querySelector("#field3 .icon-btn.active")?.id || "";  
+        const dimensions = getImageDimensions(size);  
+        const resizedUrl = await resizeImage(currentImageUrl, dimensions.width, dimensions.height);  
+          
         const link = document.createElement('a');  
-        link.href = currentImageUrl;  
+        link.href = resizedUrl;  
         link.download = 'generated_image.png'; // You can change the default download name  
         link.target = '_blank'; // Open in a new tab  
         link.click();  
