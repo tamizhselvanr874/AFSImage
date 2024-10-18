@@ -376,8 +376,7 @@ function toggleActive(button, group) {
     const groupMap = {  
         style: 1,  
         quality: 2,  
-        size: 3,  
-        guide: 4  
+        size: 3 
     };  
   
     const buttons = document.querySelectorAll(`#field${groupMap[group]} .icon-btn`);  
@@ -388,12 +387,11 @@ function toggleActive(button, group) {
   
 // Ensure the correct button is highlighted on page load  
 window.addEventListener('DOMContentLoaded', () => {  
-    ['style', 'quality', 'size', 'guide'].forEach(group => {  
+    ['style', 'quality', 'size'].forEach(group => {  
         const groupMap = {  
             style: 1,  
             quality: 2,  
-            size: 3,  
-            guide: 4  
+            size: 3
         };  
         const activeButton = document.querySelector(`#field${groupMap[group]} .icon-btn.active`);  
         if (!activeButton) {  
