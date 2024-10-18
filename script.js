@@ -1,6 +1,6 @@
 let isGenerating = false;  
   
-// Function to toggle the sidebar  
+// Toggle the sidebar  
 function toggleSidebar() {  
     document.getElementById("sidebar").classList.toggle("active");  
 }  
@@ -12,7 +12,6 @@ document.getElementById("submit").addEventListener("click", () => {
     }  
 });  
   
-// --------------------------------  
 async function generateImage() {  
     const prompt = document.getElementById("promptInput").value;  
     const style = document.querySelector("#field1 .icon-btn.active")?.id || "";  
@@ -30,13 +29,11 @@ async function generateImage() {
     imageContainerCard1.innerHTML = "";  
     imageContainerCard1.appendChild(loadingSpinnerCard1);  
   
-    const imageContainerCard2 = document.querySelector("#card2 .card2-image-container"); // No loading spinner for card2; it retains the previous image  
-  
-    const retryCount = 3; // Number of retries  
-    const initialDelay = 1000; // Initial delay in milliseconds  
+    const retryCount = 3;  
+    const initialDelay = 1000;  
   
     async function fetchImageWithRetry(currentRetry = 0) {  
-        isGenerating = true; // Set flag to true to prevent multiple requests  
+        isGenerating = true;  
         try {  
             const response = await fetch("https://afsimage.azurewebsites.net/api/httpTriggerts", {  
                 method: "POST",  
@@ -54,11 +51,11 @@ async function generateImage() {
   
             if (data.imageUrls) {  
                 const url = data.imageUrls[0];  
-                await handleImageLoad(url, prompt, size, imageContainerCard1, imageContainerCard2, loadingSpinnerCard1);  
-                isGenerating = false; // Reset flag after successful image load  
+                await handleImageLoad(url, prompt, style, quality, size, imageContainerCard1, loadingSpinnerCard1);  
+                isGenerating = false;  
             } else {  
                 handleImageError(imageContainerCard1, loadingSpinnerCard1);  
-                isGenerating = false; // Reset flag on error  
+                isGenerating = false;  
             }  
         } catch (error) {  
             console.error("Error generating image:", error);  
@@ -67,42 +64,33 @@ async function generateImage() {
                 setTimeout(() => fetchImageWithRetry(currentRetry + 1), delay);  
             } else {  
                 handleImageError(imageContainerCard1, loadingSpinnerCard1, true);  
-                isGenerating = false; // Reset flag after retries  
+                isGenerating = false;  
             }  
         }  
     }  
   
-    // Initial fetch attempt  
     fetchImageWithRetry();  
 }  
   
-async function handleImageLoad(url, prompt, size, imageContainerCard1, imageContainerCard2, loadingSpinnerCard1) {  
+async function handleImageLoad(url, prompt, style, quality, size, imageContainerCard1, loadingSpinnerCard1) {  
     const imgCard1 = new Image();  
-    const imgCard2 = new Image();  
     imgCard1.src = url;  
-    imgCard2.src = url;  
     imgCard1.alt = prompt;  
-    imgCard2.alt = prompt;  
     imgCard1.classList.add("card1-image");  
-    imgCard2.classList.add("card2-image");  
   
     imgCard1.onload = () => {  
         loadingSpinnerCard1.remove();  
-        imageContainerCard1.innerHTML = ""; // Clear loading spinner  
+        imageContainerCard1.innerHTML = "";  
         imageContainerCard1.appendChild(imgCard1);  
         appendButtons();  
         recycleButton.disabled = false;  
         deleteButton.disabled = false;  
-        currentImageUrl = imgCard1.src; // Store the current image URL  
+        currentImageUrl = imgCard1.src;  
   
-        // Load image in card2 after imgCard1 is loaded  
-        imageContainerCard2.innerHTML = ""; // Clear previous image  
-        imageContainerCard2.appendChild(imgCard2);  
-        appendCard3Buttons();  
-        updateCarouselImages(url); // Update the carousel images with the new image URL  
+        updateCarouselImages(url, style, quality, size);  
     };  
   
-    imgCard1.onerror = imgCard2.onerror = () => {  
+    imgCard1.onerror = () => {  
         handleImageError(imageContainerCard1, loadingSpinnerCard1);  
     };  
 }  
@@ -138,8 +126,6 @@ function handleImageError(imageContainerCard1, loadingSpinnerCard1, isRetryExcee
         </span>`;  
 }  
   
-// ----------------------------------------------  
-// Function to resize image  
 function resizeImage(url, width, height) {  
     return new Promise((resolve, reject) => {  
         const img = new Image();  
@@ -188,7 +174,6 @@ deleteButton.disabled = true;
   
 let currentImageUrl = ""; // Store the current generated image URL  
   
-// Ensure buttons are positioned on top of the image  
 function appendButtons() {  
     const imageContainer = document.querySelector("#card1 .card1-image-container");  
     imageContainer.appendChild(recycleButton);  
@@ -196,7 +181,6 @@ function appendButtons() {
     imageContainer.appendChild(downloadButton);  
 }  
   
-// Ensure buttons are positioned on top of the image in Card 3  
 function appendCard3Buttons() {  
     const card3ImageContainer = document.querySelector(".card2-image-container");  
     card3ImageContainer.appendChild(leftArrowButtonCard3);  
@@ -215,34 +199,41 @@ document.querySelectorAll(".icon-btn").forEach(button => {
     });  
 });  
   
-// Event listener for the download button in Card 2  
+// Event listener for the download button in Card 1  
 downloadButton.addEventListener('click', async () => {  
-    if (currentImageUrl) {  
-        const size = document.querySelector("#field3 .icon-btn.active")?.id || "";  
-        const dimensions = getImageDimensions(size);  
-        const resizedUrl = await resizeImage(currentImageUrl, dimensions.width, dimensions.height);  
-          
-        const link = document.createElement('a');  
-        link.href = resizedUrl;  
-        link.download = 'generated_image.png'; // You can change the default download name  
-        link.target = '_blank'; // Open in a new tab  
-        link.click();  
+    const imgElement = document.querySelector("#card1 .card1-image");  
+    const size = document.querySelector("#field3 .icon-btn.active")?.id || "Square";  
+    const style = document.querySelector("#field1 .icon-btn.active")?.id || "default";  
+    const quality = document.querySelector("#field2 .icon-btn.active")?.id || "default";  
+    const dimensions = getImageDimensions(size);  
+  
+    if (imgElement && imgElement.src) {  
+        try {  
+            const resizedUrl = await resizeImage(imgElement.src, dimensions.width || imgElement.width, dimensions.height || imgElement.height);  
+            const link = document.createElement('a');  
+            link.href = resizedUrl;  
+            link.download = `image_${style}_${quality}_${size}.png`; // Meaningful file name  
+            link.click();  
+        } catch (error) {  
+            console.error("Error resizing image:", error);  
+            alert("Failed to download the image.");  
+        }  
     } else {  
-        alert("No image to download.");  
+        alert("No image available to download.");  
     }  
 });  
   
 // Event listener for the delete button in Card 2  
 deleteButton.addEventListener('click', () => {  
     const imageContainer = document.querySelector("#card1 .card1-image-container");  
-    imageContainer.innerHTML = ""; // Clear the current image  
+    imageContainer.innerHTML = "";  
     const sampleImage = new Image();  
-    sampleImage.src = "image1.png"; // Path to the sample image  
+    sampleImage.src = "image1.png";  
     sampleImage.alt = "Sample Image";  
     sampleImage.classList.add("card2-image");  
     imageContainer.appendChild(sampleImage);  
-    appendButtons(); // Re-append the buttons  
-    currentImageUrl = ""; // Clear the current image URL  
+    appendButtons();  
+    currentImageUrl = "";  
 });  
   
 // Event listener for the recycle button in Card 2  
@@ -256,7 +247,7 @@ recycleButton.addEventListener('click', () => {
         card3Images.unshift(card3Image);  
         displayCard3Image(0);  
         generateImage();  
-        card3ImageContainer.scrollTop = 0; // Scroll to the top  
+        card3ImageContainer.scrollTop = 0;  
     } else if (!currentImageUrl) {  
         alert("No image to regenerate.");  
     }  
@@ -276,7 +267,7 @@ generate.addEventListener('click', () => {
     if (!isGenerating) {  
         generateImage();  
     }  
-    card3ImageContainer.scrollTop = 0; // Scroll to the top  
+    card3ImageContainer.scrollTop = 0;  
 });  
   
 // Event listener for the left arrow button in Card 3  
@@ -304,7 +295,7 @@ function displayCard3Image(index) {
         appendCard3Buttons();  
     } else {  
         const sampleImage = new Image();  
-        sampleImage.src = "image2.png"; // Path to the default image  
+        sampleImage.src = "image2.png";  
         sampleImage.alt = "Sample Image";  
         sampleImage.classList.add("card2-image");  
         card3ImageContainer.appendChild(sampleImage);  
@@ -312,18 +303,50 @@ function displayCard3Image(index) {
     }  
 }  
   
+// Function to update the carousel images array  
+function updateCarouselImages(url, style, quality, size) {  
+    const card3Image = new Image();  
+    card3Image.src = url;  
+    card3Image.alt = "Generated Image";  
+    card3Image.classList.add("card2-image");  
+  
+    // Store the features as data attributes with defaults if needed  
+    card3Image.dataset.style = style || "default_style";  
+    card3Image.dataset.quality = quality || "default_quality";  
+    card3Image.dataset.size = size || "Square";  
+  
+    card3Images.unshift(card3Image);  
+    currentCard3ImageIndex = 0;  
+    displayCard3Image(currentCard3ImageIndex);  
+}  
+  
 // Event listener for the download button in Card 3  
-downloadButtonCard3.addEventListener('click', () => {  
+downloadButtonCard3.addEventListener('click', async () => {  
     if (card3Images.length > 0 && currentCard3ImageIndex >= 0 && currentCard3ImageIndex < card3Images.length) {  
-        const link = document.createElement('a');  
-        link.href = card3Images[currentCard3ImageIndex].src;  
-        link.download = 'generated_image.png';  
-        link.target = '_blank';  
-        link.click();  
+        const currentImage = card3Images[currentCard3ImageIndex];  
+        const style = currentImage.dataset.style;  
+        const quality = currentImage.dataset.quality;  
+        const size = currentImage.dataset.size;  
+        const dimensions = getImageDimensions(size);  
+  
+        if (currentImage.src) {  
+            try {  
+                const resizedUrl = await resizeImage(currentImage.src, dimensions.width, dimensions.height);  
+                const link = document.createElement('a');  
+                link.href = resizedUrl;  
+                link.download = `image_${style}_${quality}_${size}.png`; // Meaningful file name  
+                link.click();  
+            } catch (error) {  
+                console.error("Error resizing image:", error);  
+                alert("Failed to download the image.");  
+            }  
+        } else {  
+            alert("No image to download.");  
+        }  
     } else {  
         alert("No image to download.");  
     }  
-});  
+});      
   
 // Event listener for the delete button in Card 3  
 deleteButtonCard3.addEventListener('click', () => {  
@@ -358,34 +381,33 @@ function toggleActive(button, group) {
     };  
   
     const buttons = document.querySelectorAll(`#field${groupMap[group]} .icon-btn`);  
-    buttons.forEach(btn => {  
-        if (btn !== button) {  
-            btn.classList.remove('active');  
+    buttons.forEach(btn => btn.classList.remove('active'));  
+  
+    button.classList.add('active');  
+}  
+  
+// Ensure the correct button is highlighted on page load  
+window.addEventListener('DOMContentLoaded', () => {  
+    ['style', 'quality', 'size', 'guide'].forEach(group => {  
+        const groupMap = {  
+            style: 1,  
+            quality: 2,  
+            size: 3,  
+            guide: 4  
+        };  
+        const activeButton = document.querySelector(`#field${groupMap[group]} .icon-btn.active`);  
+        if (!activeButton) {  
+            const defaultButton = document.querySelector(`#field${groupMap[group]} .icon-btn`);  
+            if (defaultButton) {  
+                defaultButton.classList.add('active');  
+            }  
         }  
     });  
-  
-    if (button.classList.contains('active')) {  
-        button.classList.remove('active');  
-    } else {  
-        button.classList.add('active');  
-    }  
-}  
+});  
   
 // Event listener for the Enter key in the prompt input field  
 document.getElementById('promptInput').addEventListener('keydown', function (event) {  
     if (event.key === 'Enter' && !isGenerating) {  
         document.getElementById('submit').click();  
     }  
-});  
-  
-// Function to update the carousel images array  
-function updateCarouselImages(url) {  
-    const card3Image = new Image();  
-    card3Image.src = url;  
-    card3Image.alt = "Generated Image";  
-    card3Image.classList.add("card2-image");  
-  
-    card3Images.unshift(card3Image);  
-    currentCard3ImageIndex = 0;  
-    displayCard3Image(currentCard3ImageIndex);  
-}  
+});   
