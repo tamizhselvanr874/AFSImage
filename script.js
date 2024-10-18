@@ -105,6 +105,8 @@ function getImageDimensions(size) {
             return { width: 1080, height: 1920 };  
         case "Landscape":  
             return { width: 1920, height: 1080 };  
+        case "Square":  
+            return { width: 1080, height: 1080 }; // Add dimensions for Square  
         default:  
             return { width: 0, height: 0 };  
     }  
@@ -324,9 +326,9 @@ function updateCarouselImages(url, style, quality, size) {
 downloadButtonCard3.addEventListener('click', async () => {  
     if (card3Images.length > 0 && currentCard3ImageIndex >= 0 && currentCard3ImageIndex < card3Images.length) {  
         const currentImage = card3Images[currentCard3ImageIndex];  
-        const style = currentImage.dataset.style;  
-        const quality = currentImage.dataset.quality;  
-        const size = currentImage.dataset.size;  
+        const style = currentImage.dataset.style || "default_style";  
+        const quality = currentImage.dataset.quality || "default_quality";  
+        const size = currentImage.dataset.size || "Square"; // Default to Square  
         const dimensions = getImageDimensions(size);  
   
         if (currentImage.src) {  
@@ -334,7 +336,7 @@ downloadButtonCard3.addEventListener('click', async () => {
                 const resizedUrl = await resizeImage(currentImage.src, dimensions.width, dimensions.height);  
                 const link = document.createElement('a');  
                 link.href = resizedUrl;  
-                link.download = `image_${style}_${quality}_${size}.png`; // Meaningful file name  
+                link.download = `image_${style}_${quality}_${size}.png`;  
                 link.click();  
             } catch (error) {  
                 console.error("Error resizing image:", error);  
@@ -346,7 +348,7 @@ downloadButtonCard3.addEventListener('click', async () => {
     } else {  
         alert("No image to download.");  
     }  
-});      
+});       
   
 // Event listener for the delete button in Card 3  
 deleteButtonCard3.addEventListener('click', () => {  
