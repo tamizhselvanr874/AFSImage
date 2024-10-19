@@ -373,12 +373,16 @@ copyButtonCard3.addEventListener('click', () => {
     }  
 });  
   
-// Toggle active class for icon buttons  
 function toggleActive(button, group) {  
+    if (group === 'guide') {  
+        button.classList.toggle('active');  
+        return;  
+    }  
+  
     const groupMap = {  
         style: 1,  
         quality: 2,  
-        size: 3 
+        size: 3  
     };  
   
     const buttons = document.querySelectorAll(`#field${groupMap[group]} .icon-btn`);  
@@ -393,7 +397,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const groupMap = {  
             style: 1,  
             quality: 2,  
-            size: 3
+            size: 3  
         };  
         const activeButton = document.querySelector(`#field${groupMap[group]} .icon-btn.active`);  
         if (!activeButton) {  
@@ -403,7 +407,13 @@ window.addEventListener('DOMContentLoaded', () => {
             }  
         }  
     });  
-});  
+      
+    // Initialize Style Guide button if needed  
+    const guideButton = document.getElementById('Guide');  
+    if (!guideButton.classList.contains('active')) {  
+        guideButton.classList.add('active');  
+    }  
+});   
   
 // Event listener for the Enter key in the prompt input field  
 document.getElementById('promptInput').addEventListener('keydown', function (event) {  
